@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
+import Card from "@/src/components/Card";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const index = () => {
   return (
-    <View style={styles.container}>
-      <Text>start page</Text>
-    </View>
+    <GestureHandlerRootView style={styles.container}>
+      <Card />
+    </GestureHandlerRootView>
   );
 };
 
