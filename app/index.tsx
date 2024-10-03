@@ -1,22 +1,19 @@
-import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import Card from "@/src/components/Card";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { createTamagui, TamaguiProvider } from "tamagui";
+import { config } from "@tamagui/config/v3";
+import Game from "@/src/components/Game";
+
+const tamaguiConfig = createTamagui(config);
 
 const index = () => {
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <Card />
-    </GestureHandlerRootView>
+    <TamaguiProvider config={tamaguiConfig}>
+      <GestureHandlerRootView>
+        <Game />
+      </GestureHandlerRootView>
+    </TamaguiProvider>
   );
 };
 
 export default index;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

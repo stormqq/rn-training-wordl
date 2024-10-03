@@ -1,17 +1,48 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolate,
 } from "react-native-reanimated";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+
+type CardProps = {
+  word: string;
+  guess: string;
+  isGuessed: boolean;
+  index: number;
+  flip: any;
+};
 
 const duration = 500;
 
-const Card = () => {
+const Card = ({
+  word,
+  guess,
+  isGuessed,
+  index,
+  flip,
+}: CardProps & { index: number }) => {
   const flipProgress = useSharedValue(0);
+
+  const bgColor = !isGuessed
+    ? "gray"
+    : guess[index] === word[index]
+    ? "green"
+    : word.includes(guess[index])
+    ? "orange"
+    : "gray";
+
+  useEffect(() => {
+    if (flip) {
+      flipProgress.value = withTiming(1, { duration });
+    }
+  }, [flip]);
+
+  useEffect(() => {
+    flipProgress.value = 0;
+  }, [word]);
 
   const frontCardAnimatedStyle = useAnimatedStyle(() => {
     const rotateY = interpolate(flipProgress.value, [0, 1], [0, 180]);
@@ -28,30 +59,27 @@ const Card = () => {
     return {
       transform: [{ rotateY: `${rotateY}deg` }],
       opacity: interpolate(flipProgress.value, [0, 0.5, 1], [0, 0, 1]),
+      backgroundColor: bgColor,
     };
   });
 
-  const handlePress = () => {
-    flipProgress.value = withTiming(flipProgress.value === 0 ? 1 : 0, {
-      duration,
-    });
-  };
-
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <Animated.View style={[styles.card, frontCardAnimatedStyle]}>
+        <Text style={styles.text}>{guess[index]}</Text>
+      </Animated.View>
 
-        <Animated.View style={[styles.card, frontCardAnimatedStyle]}>
-          <Text style={styles.text}>M</Text>
-        </Animated.View>
-
-        <Animated.View
-          style={[styles.card, styles.cardBack, backCardAnimatedStyle]}
-        >
-          <Text style={styles.text}>S</Text>
-        </Animated.View>
-      </View>
-    </TouchableWithoutFeedback>
+      <Animated.View
+        style={[
+          styles.card,
+          styles.cardBack,
+          { backgroundColor: bgColor },
+          backCardAnimatedStyle,
+        ]}
+      >
+        <Text style={styles.text}>{guess[index]}</Text>
+      </Animated.View>
+    </View>
   );
 };
 
@@ -59,8 +87,8 @@ export default Card;
 
 const styles = StyleSheet.create({
   container: {
-    width: 300,
-    height: 300,
+    width: 80,
+    height: 80,
     position: "relative",
   },
   card: {
@@ -76,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: "orange",
   },
   text: {
-    fontSize: 80,
+    fontSize: 40,
     fontWeight: "bold",
     color: "#fff",
   },
