@@ -43,11 +43,10 @@ const Keyboard = () => {
   };
 
   useEffect(() => {
-    if (state.won || state.lost) {
-      state.startGame();
+    if (state.won || state.lost || state.word) {
       setKeyStatus({});
     }
-  }, [state.won, state.lost]);
+  }, [state.won, state.lost, state.word]);
 
   return (
     <View style={styles.keyboard}>

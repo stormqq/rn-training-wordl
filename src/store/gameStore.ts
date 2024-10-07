@@ -1,4 +1,4 @@
-import { getDailyWord } from "get-daily-word";
+import { getDailyWordAsync, getRandomWord } from "get-daily-word";
 import { create } from "zustand";
 
 interface GameStore {
@@ -13,6 +13,7 @@ interface GameStore {
   exactGuesses: string[];
   inexactGuesses: string[];
   startGame: () => void;
+  startGameRandom: () => void;
   inputLetter: (letter: string) => void;
   deleteLetter: () => void;
   submitGuess: () => void;
@@ -44,7 +45,7 @@ export const useWordleStore = create<GameStore>((set, get) => ({
   },
 
   startGame: async () => {
-    const newWord = await getDailyWord();
+    const newWord = await getDailyWordAsync();
     set((state) => ({
       word: newWord,
       guesses: new Array(6).fill(""),
@@ -52,6 +53,17 @@ export const useWordleStore = create<GameStore>((set, get) => ({
       won: false,
       lost: false,
       totalGames: state.totalGames + 1,
+    }));
+  },
+
+  startGameRandom: () => {
+    const newWord = getRandomWord();
+    set((state) => ({
+      word: newWord,
+      guesses: new Array(6).fill(""),
+      currentGuess: 0,
+      won: false,
+      lost: false,
     }));
   },
 

@@ -50,6 +50,12 @@ const Game = () => {
     setIsSettingsSheetOpen(true);
   }, []);
 
+  const handleGenerateButtonPress = useCallback(() => {
+    Alert.alert("New random word is generated!");
+    state.startGameRandom();
+    setIsSettingsSheetOpen(false);
+  }, []);
+
   const shareText = async () => {
     try {
       await Share.share({
@@ -105,10 +111,10 @@ const Game = () => {
           <SizableText size="$8">Settings</SizableText>
           <Button
             fontSize={"$5"}
-            borderWidth={1}
-            borderColor={"$gray11"}
-            backgroundColor={"$gray2"}
-            onPress={() => state.startGame()}
+            borderWidth={2}
+            borderColor={"$gray14"}
+            backgroundColor={"$gray4"}
+            onPress={handleGenerateButtonPress}
           >
             Generate random word
           </Button>
