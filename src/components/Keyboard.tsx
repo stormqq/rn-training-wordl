@@ -3,10 +3,10 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { View } from "tamagui";
 import { useWordleStore } from "../store/gameStore";
 
-const Keyboard = () => {
-  const qwerty = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
-  const state = useWordleStore();
+const qwerty = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
 
+const Keyboard = () => {
+  const state = useWordleStore();
   const [keyStatus, setKeyStatus] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -20,7 +20,9 @@ const Keyboard = () => {
         } else if (state.word.includes(letter)) {
           newKeyStatus[letter] = "present";
         } else {
-          newKeyStatus[letter] = "absent";
+          if (!newKeyStatus[letter]) {
+            newKeyStatus[letter] = "used";
+          }
         }
       });
 
@@ -40,14 +42,16 @@ const Keyboard = () => {
     state.submitGuess();
   };
 
-  const handleRefreshGame = () => {
-    state.startGame();
-    setKeyStatus({});
-  };
+  useEffect(() => {
+    if (state.won || state.lost) {
+      state.startGame();
+      setKeyStatus({});
+    }
+  }, [state.won, state.lost]);
 
   return (
     <View style={styles.keyboard}>
-      {qwerty.map((row, rowIndex) => (
+      {qwerty.slice(0, 2).map((row, rowIndex) => (
         <View key={rowIndex} style={styles.keyboardRow}>
           {row.split("").map((key) => (
             <TouchableOpacity
@@ -61,7 +65,9 @@ const Keyboard = () => {
                       ? "#28a745"
                       : keyStatus[key] === "present"
                       ? "orange"
-                      : "#ddd",
+                      : keyStatus[key] === "used"
+                      ? "#2e2e2e"
+                      : "#c4c2c2",
                 },
               ]}
             >
@@ -71,14 +77,32 @@ const Keyboard = () => {
         </View>
       ))}
       <View style={styles.keyboardRow}>
-        <TouchableOpacity onPress={handleBackspace} style={styles.key}>
-          <Text style={styles.keyText}>CLEAR</Text>
+        <TouchableOpacity onPress={handleBackspace} style={styles.controlKey}>
+          <Text style={styles.controlKeyText}>CLEAR</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleRefreshGame} style={styles.key}>
-          <Text style={styles.keyText}>REFRESH</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleEnter} style={styles.keyEnter}>
-          <Text style={styles.keyText}>Enter</Text>
+        {qwerty[2].split("").map((key) => (
+          <TouchableOpacity
+            key={key}
+            onPress={() => handleKeyPress(key)}
+            style={[
+              styles.key,
+              {
+                backgroundColor:
+                  keyStatus[key] === "correct"
+                    ? "#28a745"
+                    : keyStatus[key] === "present"
+                    ? "orange"
+                    : keyStatus[key] === "used"
+                    ? "#2e2e2e"
+                    : "#c4c2c2",
+              },
+            ]}
+          >
+            <Text style={styles.keyText}>{key.toUpperCase()}</Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity onPress={handleEnter} style={styles.controlKey}>
+          <Text style={styles.controlKeyText}>ENTER</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -90,25 +114,35 @@ export default Keyboard;
 const styles = StyleSheet.create({
   keyboard: {
     marginTop: 20,
+    margin: 30,
   },
   keyboardRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 10,
   },
   key: {
-    padding: 10,
+    padding: 8,
     margin: 5,
     borderRadius: 5,
+    minWidth: 20,
   },
   keyText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "white",
   },
-  keyEnter: {
+  controlKey: {
     padding: 10,
+    width: 65,
+    alignItems: "center",
+    justifyContent: "center",
     margin: 5,
-    backgroundColor: "#28a745",
+    backgroundColor: "#c4c2c2",
     borderRadius: 5,
+  },
+  controlKeyText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "white",
   },
 });

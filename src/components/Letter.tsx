@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./Card";
 import { View } from "tamagui";
 
@@ -9,9 +9,9 @@ type LetterRowProps = {
 };
 
 const LetterRow = ({ word, guess, isGuessed }: LetterRowProps) => {
-  const [flips, setFlips] = React.useState<boolean[]>(new Array(5).fill(false));
+  const [flips, setFlips] = useState<boolean[]>(new Array(5).fill(false));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isGuessed) {
       const newFlips = new Array(5).fill(false);
       setFlips(newFlips);

@@ -7,6 +7,9 @@ interface GameStore {
   currentGuess: number;
   won: boolean;
   lost: boolean;
+  totalGames: number;
+  totalWins: number;
+  currentStreak: number;
   exactGuesses: string[];
   inexactGuesses: string[];
   startGame: () => void;
@@ -18,6 +21,9 @@ interface GameStore {
 export const useWordleStore = create<GameStore>((set, get) => ({
   word: "",
   guesses: new Array(6).fill(""),
+  totalGames: 0,
+  totalWins: 0,
+  currentStreak: 0,
   currentGuess: 0,
   won: false,
   lost: false,
@@ -38,13 +44,14 @@ export const useWordleStore = create<GameStore>((set, get) => ({
   },
 
   startGame: async () => {
-    const newWord = getDailyWord();
-    set(() => ({
+    const newWord = await getDailyWord();
+    set((state) => ({
       word: newWord,
       guesses: new Array(6).fill(""),
       currentGuess: 0,
       won: false,
       lost: false,
+      totalGames: state.totalGames + 1,
     }));
   },
 
@@ -56,7 +63,9 @@ export const useWordleStore = create<GameStore>((set, get) => ({
     if (currentWord.length < 5) {
       const updatedGuesses = [...guesses];
       updatedGuesses[currentGuess] = currentWord + letter.toLowerCase();
-      set(() => ({ guesses: updatedGuesses }));
+      setTimeout(() => {
+        set(() => ({ guesses: updatedGuesses }));
+      }, 300);
     }
   },
 
@@ -80,9 +89,16 @@ export const useWordleStore = create<GameStore>((set, get) => ({
 
     if (currentWord.length === 5) {
       if (currentWord === word) {
-        set(() => ({ won: true }));
+        set((state) => ({
+          won: true,
+          totalWins: state.totalWins + 1,
+          currentStreak: state.currentStreak + 1,
+        }));
       } else if (currentGuess === 5) {
-        set(() => ({ lost: true }));
+        set((state) => ({
+          lost: true,
+          currentStreak: 0,
+        }));
       } else {
         const nextGuess = currentGuess + 1;
         set(() => ({ currentGuess: nextGuess }));

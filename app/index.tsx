@@ -1,19 +1,67 @@
-import React from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { createTamagui, TamaguiProvider } from "tamagui";
-import { config } from "@tamagui/config/v3";
-import Game from "@/src/components/Game";
+import { View, Text, StyleSheet, Image } from "react-native";
+import { useRouter } from "expo-router";
+import { Button } from "tamagui";
 
-const tamaguiConfig = createTamagui(config);
+export default function Menu() {
+  const router = useRouter();
 
-const index = () => {
+  const handleStartGame = () => {
+    router.push("/game");
+  };
+
   return (
-    <TamaguiProvider config={tamaguiConfig}>
-      <GestureHandlerRootView>
-        <Game />
-      </GestureHandlerRootView>
-    </TamaguiProvider>
+    <View style={styles.container}>
+      <Image
+        source={{
+          uri: "https://i.ibb.co/kHQvd4v/wordle-Logo.jpg",
+        }}
+        width={100}
+        height={100}
+      />
+      <Text style={styles.title}>Wordle</Text>
+      <Text style={styles.subtitle}>
+        Get 6 chances to guess a 5-letter word.
+      </Text>
+      <View style={styles.buttonsContainer}>
+        <Button style={styles.button} onPress={handleStartGame}>
+          Play
+        </Button>
+      </View>
+    </View>
   );
-};
+}
 
-export default index;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 12,
+    padding: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 42,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 38,
+    textAlign: "center",
+  },
+  buttonsContainer: {
+    marginTop: 22,
+    gap: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  button: {
+    width: 200,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
+    alignItems: "center",
+    backgroundColor: "white",
+    textAlign: "center",
+    borderColor: "black",
+    borderRadius: 20,
+  },
+});
